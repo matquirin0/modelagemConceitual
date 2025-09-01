@@ -1,4 +1,4 @@
-package com.mpq.ModelagemConceitual;
+package com.mpq.modelagemconceitual;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
