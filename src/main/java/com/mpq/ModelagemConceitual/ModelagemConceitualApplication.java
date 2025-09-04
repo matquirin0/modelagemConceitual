@@ -1,5 +1,6 @@
 package com.mpq.modelagemconceitual;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import com.mpq.modelagemconceitual.domain.Cidade;
 import com.mpq.modelagemconceitual.domain.Cliente;
 import com.mpq.modelagemconceitual.domain.Endereco;
 import com.mpq.modelagemconceitual.domain.Estado;
+import com.mpq.modelagemconceitual.domain.Pagamento;
+import com.mpq.modelagemconceitual.domain.PagamentoComBoleto;
+import com.mpq.modelagemconceitual.domain.PagamentoComCartao;
+import com.mpq.modelagemconceitual.domain.Pedido;
 import com.mpq.modelagemconceitual.domain.Produto;
+import com.mpq.modelagemconceitual.domain.enums.EstadoPagamento;
 import com.mpq.modelagemconceitual.domain.enums.TipoCliente;
 import com.mpq.modelagemconceitual.repositories.CategoriaRepository;
 import com.mpq.modelagemconceitual.repositories.CidadeRepository;
 import com.mpq.modelagemconceitual.repositories.ClienteRepository;
 import com.mpq.modelagemconceitual.repositories.EnderecoRepository;
 import com.mpq.modelagemconceitual.repositories.EstadoRepository;
+import com.mpq.modelagemconceitual.repositories.PagamentoRepository;
+import com.mpq.modelagemconceitual.repositories.PedidoRepository;
 import com.mpq.modelagemconceitual.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -36,6 +44,10 @@ public class ModelagemConceitualApplication implements CommandLineRunner {
 	public ClienteRepository clienteRepository;
 	@Autowired
 	public EnderecoRepository enderecoRepository;
+	@Autowired
+	public PedidoRepository pedidoRepository;
+	@Autowired
+	public PagamentoRepository pagamentoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ModelagemConceitualApplication.class, args);
@@ -85,6 +97,21 @@ public class ModelagemConceitualApplication implements CommandLineRunner {
 		
 		clienteRepository.saveAll(Arrays.asList(cli1));
 		enderecoRepository.saveAll(Arrays.asList(e1, e2));
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
+		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
+		
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+		
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2017 11:30"), null);
+		ped2.setPagamento(pagto2);
+		
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+		
+		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
 		
 	}
 
